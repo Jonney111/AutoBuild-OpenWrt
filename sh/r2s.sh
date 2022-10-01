@@ -1,14 +1,13 @@
 #!/bin/bash
 #
-# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
+# Copyright (c) P3TERX 
+# Copyright (c) esirplayground
 #
 # This is free software, licensed under the MIT License.
 # See /LICENSE for more information.
-#
-# https://github.com/P3TERX/Actions-OpenWrt
-# File name: diy-part2.sh
+
+# File name: r2s.sh
 # Description: OpenWrt DIY script part 2 (After Update feeds)
-#
 
 # Modify default IP（FROM 192.168.1.1 CHANGE TO 192.168.5.1）
 # sed -i 's/192.168.5.1/192.168.50.5/g' package/base-files/files/bin/config_generate
