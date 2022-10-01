@@ -12,8 +12,11 @@
 
 # Modify default IP（FROM 192.168.1.1 CHANGE TO 192.168.5.1）
 # sed -i 's/192.168.5.1/192.168.50.5/g' package/base-files/files/bin/config_generate
-sed -i 's/192.168.1.1/192.168.5.1/g' package/base-files/files/bin/config_generate
-sed -i '/CYXluq4wUazHjmCDBCqXF/d' package/lean/default-settings/files/zzz-default-settings # 设置密码为空
+#1. Modify default IP
+sed -i 's/192.168.1.1/192.168.5.1/g' openwrt/package/base-files/files/bin/config_generate
+
+#2. Clear the login password
+sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.//g' openwrt/package/lean/default-settings/files/zzz-default-settings
 
 # a dependency on 'luci-lib-ipkg', which does not exist
 # sed -i 's/luci-lib-ipkg/luci-base/g' package/feeds/kenzo/luci-app-bypass/Makefile
