@@ -32,23 +32,14 @@ sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.//g' openwrt/package/lean/default-se
 
 # 拉取软件包
 
-#adguardhome
-svn co https://github.com/Jonney111/openwrt-packages/trunk/luci-app-adguardhome package/luci-app-adguardhome
-openclash
-svn co https://github.com/vernesong/OpenClash/trunk/luci-app-openclash package/luci-app-openclash
 #diskman
 svn co https://github.com/lisaac/luci-app-diskman/trunk/applications/luci-app-diskman package/luci-app-diskman
 #passwall
 git clone https://github.com/xiaorouji/openwrt-passwall.git package/openwrt-passwall
 svn co https://github.com/xiaorouji/openwrt-passwall/branches/luci/luci-app-passwall package/luci-app-passwall
-#Ssr plus
-git clone https://github.com/fw876/helloworld.git package/helloworld
 #smartdns
 svn co https://github.com/kenzok8/openwrt-packages/trunk/smartdns package/smartdns
 svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-app-smartdns package/luci-app-smartdns
-#HelloWorld
-git clone https://github.com/jerrykuku/lua-maxminddb.git package/lean/lua-maxminddb  #git lua-maxminddb 依赖
-git clone https://github.com/jerrykuku/luci-app-vssr.git package/lean/luci-app-vssr
 #argon主题
 #git clone https://github.com/jerrykuku/luci-app-argon-config.git package/luci-app-argon-config
 git clone https://github.com/kenzok78/luci-theme-argonne.git package/luci-theme-argonne
