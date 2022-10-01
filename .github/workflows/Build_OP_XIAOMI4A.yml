@@ -1,1 +1,131 @@
+#=================================================
+# Description: Build OpenWrt using GitHub Actions
+# Lisence: MIT
+# Author: eSirPlayground
+# Youtube Channel: https://goo.gl/fvkdwm 
+#=================================================
 
+name: Build_NanoPi_XIAOMI4A
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
+
+  push:
+    branches: 
+      - master
+
+env:
+  UPLOAD_RELEASE: true
+  TZ: Asia/Shanghai
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+  
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+        
+    - name: Clone source code
+      env: 
+        REPO_URL: https://github.com/coolsnowwolf/lede
+        REPO_BRANCH: master
+      run: |
+        git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+        cd openwrt
+    #   echo 'src-git kenzo https://github.com/kenzok8/openwrt-packages' >>feeds.conf.default
+    #   echo 'src-git small https://github.com/kenzok8/small' >>feeds.conf.default
+    #   echo "src-git ssrp https://github.com/fw876/helloworld.git" >> ./feeds.conf.default
+        
+    - name: Update & Install feeds
+      working-directory: ./openwrt
+      run: |
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+        
+    - name: Import external feeds - passwall
+      working-directory: ./openwrt
+      run: |
+        git clone https://github.com/xiaorouji/openwrt-passwall.git package/openwrt-passwall
+        svn co https://github.com/xiaorouji/openwrt-passwall/branches/luci/luci-app-passwall package/luci-app-passwall  
+
+    #- name: Import external feeds - argon主题
+    #  working-directory: ./openwrt
+    #  run: |
+    #    git clone https://github.com/kenzok78/luci-theme-argonne.git package/luci-theme-argonne
+        
+    #- name: Import external feeds - adguardhome
+    #  working-directory: ./openwrt
+    #  run: |
+    #    svn co https://github.com/Jonney111/openwrt-packages/trunk/luci-app-adguardhome package/luci-app-adguardhome
+        
+    #- name: Import external feeds - openclash
+     # working-directory: ./openwrt
+      #run: |
+       # svn co https://github.com/vernesong/OpenClash/trunk/luci-app-openclash package/luci-app-openclash
+        
+    - name: Import external feeds - diskman
+      working-directory: ./openwrt
+      run: |
+        svn co https://github.com/lisaac/luci-app-diskman/trunk/applications/luci-app-diskman package/luci-app-diskman
+
+    #- name: Import external feeds - ssr plus
+     # working-directory: ./openwrt
+      #run: |
+       # git clone https://github.com/fw876/helloworld.git package/helloworld
+        
+    #- name: Import external feeds - smartdns
+     # working-directory: ./openwrt
+      #run: |
+       # svn co https://github.com/kenzok8/openwrt-packages/trunk/smartdns package/smartdns
+        #svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-app-smartdns package/luci-app-smartdns
+        
+    #- name: Import external feeds - HelloWorld
+     # working-directory: ./openwrt
+      #run: |
+       # git clone https://github.com/jerrykuku/lua-maxminddb.git package/lean/lua-maxminddb
+        #git clone https://github.com/jerrykuku/luci-app-vssr.git package/lean/luci-app-vssr
+               
+    - name: Configuration Customization - Build_NanoPi_XIAOMI4A
+      env:
+        CONFIG_FILE: 'NanoPi_XIAOMI4A.config'
+      run: |
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        chmod +x ./customize.sh && ./customize.sh
+        cd openwrt && make defconfig
+        
+    - name: Download package
+      working-directory: ./openwrt
+      run: |
+        make download -j$(nproc)
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
+    - name: Build firmware
+      working-directory: ./openwrt
+      run: |
+        echo -e "$(nproc) thread build."
+        make -j$(nproc) V=s
+    - name : Upload artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: OpenWrt
+        path: openwrt/bin
