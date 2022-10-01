@@ -16,10 +16,6 @@ on:
         required: false
         default: 'false'
 
-  push:
-    branches: 
-      - master
-
 env:
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
