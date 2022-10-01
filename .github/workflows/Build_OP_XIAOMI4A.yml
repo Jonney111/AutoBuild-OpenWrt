@@ -57,12 +57,7 @@ jobs:
       run: |
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-        
-    - name: Import external feeds - passwall
-      working-directory: ./openwrt
-      run: |
-        git clone https://github.com/xiaorouji/openwrt-passwall.git package/openwrt-passwall
-        svn co https://github.com/xiaorouji/openwrt-passwall/branches/luci/luci-app-passwall package/luci-app-passwall  
+         
 
     #- name: Import external feeds - argon主题
     #  working-directory: ./openwrt
@@ -79,10 +74,6 @@ jobs:
       #run: |
        # svn co https://github.com/vernesong/OpenClash/trunk/luci-app-openclash package/luci-app-openclash
         
-    - name: Import external feeds - diskman
-      working-directory: ./openwrt
-      run: |
-        svn co https://github.com/lisaac/luci-app-diskman/trunk/applications/luci-app-diskman package/luci-app-diskman
 
     #- name: Import external feeds - ssr plus
      # working-directory: ./openwrt
@@ -104,9 +95,10 @@ jobs:
     - name: Configuration Customization - Build_NanoPi_XIAOMI4A
       env:
         CONFIG_FILE: 'NanoPi_XIAOMI4A.config'
+        working-directory: ./config
       run: |
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-        chmod +x ./customize.sh && ./customize.sh
+        chmod +x ./sh/xiaomi4a.sh && ./sh/xiaomi4a.sh
         cd openwrt && make defconfig
         
     - name: Download package
